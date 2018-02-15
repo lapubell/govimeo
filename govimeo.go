@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 var apiToken string
@@ -48,6 +49,30 @@ func GetVideoDuration(vID uint) (int, error) {
 	}
 
 	return video.Duration, nil
+}
+
+// GetVideoPictureID will return the ID of the picture by making a GET
+// request to the Vimeo API, and parsing the pictures.uri value
+func GetVideoPictureID(vID uint) (string, error) {
+	if len(apiToken) == 0 {
+		return "", errors.New("Please set your token")
+	}
+
+	// check and see if we need to request new data
+	if "/videos/"+strconv.Itoa(int(vID)) != video.URI {
+		err := requestDataFromVimeo(vID)
+		if err != nil {
+			return "", errors.New("Problem getting data from vimeo")
+		}
+		return getPictureID(video.Pictures.URI), nil
+	}
+
+	return getPictureID(video.Pictures.URI), nil
+}
+
+func getPictureID(uri string) string {
+	parts := strings.Split(uri, "/")
+	return parts[len(parts)-1]
 }
 
 func requestDataFromVimeo(vID uint) error {

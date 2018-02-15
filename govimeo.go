@@ -10,6 +10,7 @@ import (
 )
 
 var apiToken string
+var ApiResponse []byte
 var video vimeoVideo
 
 type vimeoVideo struct {
@@ -96,12 +97,16 @@ func requestDataFromVimeo(vID uint) error {
 		return nil
 	}
 
-	response, err := http.Get("https://api.vimeo.com/videos/" + strconv.Itoa(int(vID)))
+	client := &http.Client{}
+	req, _ := http.NewRequest("GET", "https://api.vimeo.com/videos/"+strconv.Itoa(int(vID)), nil)
+	req.Header.Set("Authorization", "Bearer "+apiToken)
+	response, err := client.Do(req)
 	if err != nil {
 		return err
 	}
 	defer response.Body.Close()
 	body, _ := ioutil.ReadAll(response.Body)
+	ApiResponse = body
 	err = json.Unmarshal(body, &v)
 	if err != nil {
 		return errors.New("problem with the response from vimeo")

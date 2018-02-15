@@ -45,21 +45,21 @@ func TestGetVideoDuration(t *testing.T) {
 
 func TestGetPictureID(t *testing.T) {
 	uri := ""
-	result := getPictureID(uri)
-	if result != "" {
+	result, _ := getPictureID(uri)
+	if result != 0 {
 		t.Errorf("Expected empty string")
 	}
 
 	uri = "a/s/d/f"
-	result = getPictureID(uri)
-	if result != "f" {
-		t.Errorf("Expected f")
+	result, _ = getPictureID(uri)
+	if result != 0 {
+		t.Errorf("Expected error")
 	}
 
-	uri = "a/s/d/f/"
-	result = getPictureID(uri)
-	if result != "" {
-		t.Errorf("Expected empty string")
+	uri = "a/s/d/f/123"
+	result, _ = getPictureID(uri)
+	if result != 123 {
+		t.Errorf("Expected int(123)")
 	}
 }
 
@@ -73,12 +73,12 @@ func TestGetVideoPictureID(t *testing.T) {
 
 	apiToken = "testing"
 	pID, e := GetVideoPictureID(321)
-	if pID != "654321" {
-		t.Errorf("expected 654321 from the fake data")
+	if pID != 654321 {
+		t.Errorf("expected int(654321) from the fake data")
 	}
 	// call it with the hardcoded fake data make sure that it doesn't request data from vimeo unless video ID changes
 	pID, e = GetVideoPictureID(321)
-	if pID != "654321" {
-		t.Errorf("expected 654321 from the fake data")
+	if pID != 654321 {
+		t.Errorf("expected int(654321) from the fake data")
 	}
 }
